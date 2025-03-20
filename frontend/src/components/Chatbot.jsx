@@ -34,7 +34,7 @@ const Chatbot = () => {
 
       {/* Chatbox */}
       {isOpen && (
-        <div className="w-80 h-[400px] bg-white dark:bg-gray-800 shadow-lg rounded-lg flex flex-col p-4 mt-2 fixed right-4 bottom-14">
+        <div className="w-80 h-[630px] bg-white dark:bg-gray-800 shadow-lg rounded-lg flex flex-col p-4 mt-2 fixed right-4 bottom-14">
           <div className="flex-1 overflow-y-auto space-y-3">
             {messages.map((msg, index) => (
               <div
