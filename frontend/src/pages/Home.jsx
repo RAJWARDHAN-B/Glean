@@ -1,17 +1,24 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Chatbot from "../components/Chatbot";
+import {toast} from "react-toastify";
 
 const Home = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [dragging, setDragging] = useState(false);
+ 
+
 
   const handleFileUpload = (e) => {
+    
     const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
+      toast.success("Uploaded successfully");
+
     } else {
-      alert("Please upload a valid PDF file.");
+     
+      toast.error("Failed to upload pdf, please try again with valid pdf .");
     }
   };
 
