@@ -1,14 +1,13 @@
-import Sidebar from "./components/Sidebar";
-import ChatBox from "./components/ChatBox";
+import React from "react"; // ✅ Ensure React is imported
+import { ThemeProvider } from "./context/ThemeContext";
+import Home from "./pages/Home";
+import "./index.css";
 
 function App() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex justify-end">
-        <ChatBox />
-      </div>
-    </div>
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>
   );
 }
 
