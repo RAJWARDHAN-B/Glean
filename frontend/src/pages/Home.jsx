@@ -1,24 +1,26 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Chatbot from "../components/Chatbot";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const [pdfFile, setPdfFile] = useState(null);
+  const [pdfUrl, setPdfUrl] = useState(null);
   const [dragging, setDragging] = useState(false);
- 
-
 
   const handleFileUpload = (e) => {
-    
     const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
+    
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
-      toast.success("Uploaded successfully");
 
+      // Generate a URL for the uploaded PDF
+      const fileUrl = URL.createObjectURL(file);
+      setPdfUrl(fileUrl);
+
+      toast.success("Uploaded successfully");
     } else {
-     
-      toast.error("Failed to upload pdf, please try again with valid pdf .");
+      toast.error("Failed to upload PDF. Please try again with a valid PDF.");
     }
   };
 
@@ -31,10 +33,10 @@ const Home = () => {
           Welcome to Glean
         </h1>
 
-        {/* PDF Upload Section (Bottom Left, Small Box) */}
+        {/* PDF Upload Section */}
         <div className="relative flex justify-start">
           <div
-            className={`w-294 p-3 border-2 border-dashed ${
+            className={`w-64 p-3 border-2 border-dashed ${
               dragging ? "border-blue-500 bg-blue-100 dark:bg-blue-900" : "border-gray-400"
             } rounded-lg text-center cursor-pointer bg-white dark:bg-gray-800`}
             onDragOver={(e) => {
@@ -67,6 +69,19 @@ const Home = () => {
             </p>
           </div>
         </div>
+
+        {/* PDF Viewer (Displayed when PDF is uploaded) */}
+        {pdfUrl && (
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+              Preview:
+            </h2>
+            <iframe
+              src={pdfUrl}
+              className="w-full h-[500px] border-2 border-gray-300 rounded-lg"
+            />
+          </div>
+        )}
       </div>
       <Chatbot />
     </div>
