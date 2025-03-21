@@ -4,7 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom global styles */
-body {
-  @apply bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white;
+/* Ensure dark mode applies */
+html.dark {
+  background-color: #1a202c; /* Dark background */
+  color: #f7fafc; /* Light text */
 }
+
