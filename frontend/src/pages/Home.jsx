@@ -10,7 +10,6 @@ const Home = () => {
 
   const handleFileUpload = (e) => {
     const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
-
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
       setPdfUrl(URL.createObjectURL(file));
@@ -21,50 +20,48 @@ const Home = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gradient-to-b from-[#1F2430] to-[#12171D] text-slate-100">
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-900 p-6 relative">
-        <h1 className="text-2xl text-gray-800 dark:text-white mb-4">
+      <div className="flex-1 flex flex-col p-6 relative">
+        <h1 className="text-3xl font-bold tracking-wide text-[#64FFDA] mb-6">
           Welcome to Glean
         </h1>
 
         {/* Content Section */}
-        <div className="mb-10 flex flex-1 space-x-4">
-          {/* PDF Viewer (Left Half) */}
-          <div className=" w-1/2 h-full border-2 border-gray-300 rounded-lg overflow-hidden">
+        <div className="flex flex-1 space-x-6">
+          {/* PDF Viewer */}
+          <div className="w-1/2 h-full border border-slate-700 rounded-lg overflow-hidden shadow-md bg-[rgba(255,255,255,0.04)] backdrop-blur-sm transition hover:shadow-lg">
             {pdfUrl ? (
-              <iframe src={pdfUrl} className="w-full h-full" />
+              <iframe src={pdfUrl} className="w-full h-full" title="PDF Viewer" />
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+              <div className="flex items-center justify-center h-full text-slate-400">
                 No PDF uploaded
               </div>
             )}
           </div>
 
-          {/* Summary Section (Right Half) */}
-          <div className="w-1/2 h-full bg-white dark:bg-gray-800 border-2 border-gray-300 rounded-lg p-4 overflow-auto">
-            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">
-              Document Summary
-            </h2>
+          {/* Summary Section */}
+          <div className="w-1/2 h-full border border-slate-700 rounded-lg p-6 overflow-auto shadow-md bg-[rgba(255,255,255,0.04)] backdrop-blur-sm transition hover:shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Document Summary</h2>
             {pdfFile ? (
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+              <p className="text-base leading-relaxed text-slate-300">
                 <strong>Title:</strong> {pdfFile.name} <br />
-                <strong>Summary:</strong> This is a placeholder for the extracted legal summary. The AI model will generate key points, risk analysis, and essential clauses here. Future updates will bring real-time analysis. 🚀
+                <strong>Summary:</strong> This is a placeholder for the extracted legal summary.
+                Future updates will provide real-time analysis and key insights.
               </p>
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic">
-                Upload a PDF to generate a summary.
-              </p>
+              <p className="italic text-slate-400">Upload a PDF to generate a summary.</p>
             )}
           </div>
         </div>
 
-        {/* Centered Upload PDF Button (Small, Non-overlapping) */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+        {/* Upload PDF Button */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
           <div
-            className={`w-100 h-11 p-3 border-2 border-dashed border-gray-400 rounded-lg text-center cursor-pointer hover:border-blue-500 transition`}
+            className="w-80 h-12 p-3 border border-dashed border-slate-600 rounded-lg text-center cursor-pointer
+                      transition-colors duration-200 bg-[rgba(255,255,255,0.03)] backdrop-blur-sm hover:border-[#64FFDA] hover:bg-[rgba(100,255,218,0.08)]"
             onDragOver={(e) => {
               e.preventDefault();
               setDragging(true);
@@ -84,11 +81,9 @@ const Home = () => {
               className="hidden"
               onChange={handleFileUpload}
             />
-            <p className="text-gray-600 dark:text-gray-300 text-sm">
+            <p className="text-base">
               {pdfFile ? (
-                <span className="text-green-600 dark:text-green-400">
-                  Uploaded: {pdfFile.name}
-                </span>
+                <span className="text-[#64FFDA]">Uploaded: {pdfFile.name}</span>
               ) : (
                 "Upload or Drag & Drop PDF here"
               )}

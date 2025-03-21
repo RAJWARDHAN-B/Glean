@@ -1,48 +1,42 @@
-import React, { useState } from "react";
-import { useTheme } from "../context/ThemeContext";
-import { FiSun, FiMoon, FiMenu, FiX, FiHome, FiLogOut } from "react-icons/fi";
+import React, { useContext } from "react";
+import { PdfContext } from "../context/PdfContext"; // Global context for PDF cases
 
 const Sidebar = () => {
-  const { theme, toggleTheme } = useTheme();
-  const [collapsed, setCollapsed] = useState(false);
+  const { cases, activeCase, setActiveCase, addNewCase } = useContext(PdfContext);
 
   return (
-    <div
-      className={`h-screen bg-gray-200 dark:bg-gray-900 p-4 flex flex-col transition-all duration-300 ${
-        collapsed ? "w-16" : "w-64"
-      }`}
-    >
-      {/* Sidebar Toggle Button */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="self-end text-gray-700 dark:text-gray-300 mb-4"
-      >
-        {collapsed ? <FiMenu size={24} /> : <FiX size={24} />}
-      </button>
+    <div className="w-64 h-full bg-gradient-to-b from-[#1F2430] to-[#12171D] text-slate-100 p-4 border-r border-slate-700 flex flex-col space-y-4">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#64FFDA]">Glean Cases</h2>
+      </div>
+      
+      {/* Cases list */}
+      <div className="flex-1 overflow-y-auto space-y-3">
+        {cases.map((caseItem) => (
+          <div
+            key={caseItem.id}
+            onClick={() => setActiveCase(caseItem.id)}
+            className={`p-3 cursor-pointer transition-colors 
+              ${activeCase === caseItem.id 
+                ? "bg-[rgba(100,255,218,0.15)]" 
+                : "bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(100,255,218,0.1)]"} 
+              rounded-full`}
+          >
+            {caseItem.title}
+          </div>
+        ))}
+      </div>
 
-      {/* Dark Mode Toggle */}
-      {/* <button
-        onClick={toggleTheme}
-        className="text-gray-700 dark:text-gray-300 mb-6"
-      >
-        {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
-      </button> */}
-
-      {/* Sidebar Navigation */}
-      <ul className="space-y-4">
-        <li
-          className="flex items-center p-2 bg-gray-300 dark:bg-gray-700 rounded cursor-pointer"
+      {/* Add New Case */}
+      <div>
+        <button
+          onClick={addNewCase}
+          className="w-full p-3 rounded-full bg-[#64FFDA] text-[#1F2430] font-semibold hover:bg-[#5be8e4] transition-colors"
         >
-          <FiHome className="text-gray-800 dark:text-white" size={20} />
-          {!collapsed && <span className="ml-3 text-gray-800 dark:text-white">Home</span>}
-        </li>
-        <li
-          className="flex items-center p-2 bg-gray-300 dark:bg-gray-700 rounded cursor-pointer"
-        >
-          <FiLogOut className="text-gray-800 dark:text-white" size={20} />
-          {!collapsed && <span className="ml-3 text-gray-800 dark:text-white">Logout</span>}
-        </li>
-      </ul>
+          + New Case
+        </button>
+      </div>
     </div>
   );
 };
