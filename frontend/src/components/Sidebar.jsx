@@ -21,12 +21,12 @@ const Sidebar = () => {
       </button>
 
       {/* Dark Mode Toggle */}
-      <button
+      {/* <button
         onClick={toggleTheme}
         className="text-gray-700 dark:text-gray-300 mb-6"
       >
         {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
-      </button>
+      </button> */}
 
       {/* Sidebar Navigation */}
       <ul className="space-y-4">
