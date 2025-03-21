@@ -31,9 +31,9 @@ const Home = () => {
         </h1>
 
         {/* Content Section */}
-        <div className="flex flex-1 space-x-4">
+        <div className="mb-10 flex flex-1 space-x-4">
           {/* PDF Viewer (Left Half) */}
-          <div className="w-1/2 h-full border-2 border-gray-300 rounded-lg overflow-hidden">
+          <div className=" w-1/2 h-full border-2 border-gray-300 rounded-lg overflow-hidden">
             {pdfUrl ? (
               <iframe src={pdfUrl} className="w-full h-full" />
             ) : (
@@ -64,7 +64,7 @@ const Home = () => {
         {/* Centered Upload PDF Button (Small, Non-overlapping) */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
           <div
-            className={`w-64 p-3 border-2 border-dashed border-gray-400 rounded-lg text-center cursor-pointer hover:border-blue-500 transition`}
+            className={`w-100 h-11 p-3 border-2 border-dashed border-gray-400 rounded-lg text-center cursor-pointer hover:border-blue-500 transition`}
             onDragOver={(e) => {
               e.preventDefault();
               setDragging(true);
