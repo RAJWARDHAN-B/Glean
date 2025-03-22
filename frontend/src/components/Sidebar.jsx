@@ -3,7 +3,7 @@ import { FaBars, FaGripLines, FaFileAlt } from "react-icons/fa"; // Icons
 
 const Sidebar = ({ onSelectDoc }) => {
   const [docs, setDocs] = useState([]);
-  const [activeDoc, setActiveDoc] = useState(null);
+  const [activeDocId, setActiveDocId] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return JSON.parse(localStorage.getItem("sidebarCollapsed")) || false;
   });
@@ -20,8 +20,8 @@ const Sidebar = ({ onSelectDoc }) => {
   }, [isCollapsed]);
 
   const handleDocSelect = (doc) => {
-    setActiveDoc(doc.id);
-    onSelectDoc(doc); // Send docId & name to Home.jsx
+    setActiveDocId(doc.id);
+    onSelectDoc(doc); // Send { id, name } to Home.jsx
   };
 
   return (
@@ -54,13 +54,15 @@ const Sidebar = ({ onSelectDoc }) => {
               key={doc.id}
               onClick={() => handleDocSelect(doc)}
               className={`p-3 flex items-center space-x-2 cursor-pointer transition-all rounded-full ${
-                activeDoc === doc.id
+                activeDocId === doc.id
                   ? "bg-[rgba(100,255,218,0.15)]"
                   : "bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(100,255,218,0.1)]"
               }`}
             >
               <FaFileAlt size={18} className="text-[#64FFDA]" />
-              {!isCollapsed && <span>{doc.name}</span>}
+              {!isCollapsed && (
+                <span className="truncate max-w-[160px]">{doc.name}</span>
+              )}
             </div>
           ))
         ) : (

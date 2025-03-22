@@ -6,18 +6,24 @@ import { toast } from "react-toastify";
 const Home = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
-  const [dragging, setDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [documentIds, setDocumentIds] = useState([]);
+  const [selectedDoc, setSelectedDoc] = useState(null);
 
   const AUTH_TOKEN =
     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbmFAZ21haWwuY29tIiwiZXhwIjoxNzQ1MjEzMjk5fQ.eO78FuvWjPnfqeC7U8GUJCTuSgCvgZSpmNMcacF4o1k";
 
-  // Load document IDs from local storage on mount
+  // Load document history from local storage on mount
   useEffect(() => {
     const storedDocs = JSON.parse(localStorage.getItem("uploadedDocs")) || [];
     setDocumentIds(storedDocs);
   }, []);
+
+  // Handle file selection from sidebar
+  const handleSelectDoc = (doc) => {
+    setSelectedDoc(doc);
+    setPdfUrl(`https://glean.onrender.com/doc/${doc.id}/view`); // Assuming API serves the PDF
+  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
@@ -37,9 +43,7 @@ const Home = () => {
     try {
       const response = await fetch("https://glean.onrender.com/doc", {
         method: "POST",
-        headers: {
-          Authorization: AUTH_TOKEN, // Hardcoded Token
-        },
+        headers: { Authorization: AUTH_TOKEN },
         body: formData,
       });
 
@@ -48,15 +52,19 @@ const Home = () => {
       }
 
       const data = await response.json();
-      const newDocId = data.document_id;
+      const newDoc = { id: data.document_id, name: file.name };
 
-      // Store document ID in local storage
-      const updatedDocs = [...documentIds, newDocId];
+      // Prevent duplicate entries
+      const updatedDocs = [...documentIds, newDoc].filter(
+        (doc, index, self) => index === self.findIndex((d) => d.id === doc.id)
+      );
+
+      // Store document ID and name in local storage
       localStorage.setItem("uploadedDocs", JSON.stringify(updatedDocs));
-      setDocumentIds(updatedDocs); // Update state to trigger re-render
+      setDocumentIds(updatedDocs);
+      setSelectedDoc(newDoc); // Auto-select new file
 
       toast.success("PDF uploaded successfully!");
-      console.log("Uploaded document ID:", newDocId);
     } catch (error) {
       console.error("Upload failed:", error);
       toast.error("Upload failed. Please try again.");
@@ -68,7 +76,7 @@ const Home = () => {
   return (
     <div className="flex h-screen bg-gradient-to-b from-[#1F2430] to-[#12171D] text-slate-100">
       {/* Sidebar with document history */}
-      <Sidebar documentIds={documentIds} />
+      <Sidebar documentIds={documentIds} onSelectDoc={handleSelectDoc} />
 
       <div className="flex-1 flex flex-col p-6 relative">
         <h1 className="text-3xl font-bold tracking-wide text-[#64FFDA] mb-6">
@@ -90,13 +98,13 @@ const Home = () => {
           {/* Summary Section */}
           <div className="w-1/2 h-full border border-slate-700 rounded-lg p-6 overflow-auto shadow-md bg-[rgba(255,255,255,0.04)] backdrop-blur-sm">
             <h2 className="text-xl font-semibold mb-4">Document Report</h2>
-            {pdfFile ? (
+            {selectedDoc ? (
               <p className="text-base leading-relaxed text-slate-300">
-                <strong>Title:</strong> {pdfFile.name} <br />
+                <strong>Title:</strong> {selectedDoc.name} <br />
                 <strong>Summary:</strong> Processing...
               </p>
             ) : (
-              <p className="italic text-slate-400">Upload a PDF to generate a summary.</p>
+              <p className="italic text-slate-400">Select a PDF to view details.</p>
             )}
           </div>
         </div>
@@ -107,13 +115,10 @@ const Home = () => {
             className="w-80 h-12 p-3 border border-dashed border-slate-600 rounded-lg text-center cursor-pointer transition-colors duration-200 bg-[rgba(255,255,255,0.03)] backdrop-blur-sm hover:border-[#64FFDA] hover:bg-[rgba(100,255,218,0.08)]"
             onDragOver={(e) => {
               e.preventDefault();
-              setDragging(true);
             }}
-            onDragLeave={() => setDragging(false)}
             onDrop={(e) => {
               e.preventDefault();
               handleFileUpload(e);
-              setDragging(false);
             }}
             onClick={() => document.getElementById("pdfUpload").click()}
           >
