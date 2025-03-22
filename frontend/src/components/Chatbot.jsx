@@ -18,7 +18,7 @@ const Chatbot = () => {
     const fetchChatHistory = async () => {
       if (!activeCase) return;
       try {
-        const response = await axios.post(`${baseUrl}/chat`, {
+        const response = await axios.post(`https://glean.onrender.com/ask`, {
           doc_id: activeCase,
         });
         if (response.data.chat && response.data.chat.length > 0) {
