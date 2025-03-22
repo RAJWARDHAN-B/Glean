@@ -30,7 +30,7 @@ const Home = () => {
         </h1>
 
         {/* Content Section */}
-        <div className="flex flex-1 space-x-6">
+        <div className="mb-16 flex flex-1 space-x-6">
           {/* PDF Viewer */}
           <div className="w-1/2 h-full border border-slate-700 rounded-lg overflow-hidden shadow-md bg-[rgba(255,255,255,0.04)] backdrop-blur-sm transition hover:shadow-lg">
             {pdfUrl ? (
