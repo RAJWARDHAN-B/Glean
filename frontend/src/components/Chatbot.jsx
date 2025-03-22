@@ -50,7 +50,7 @@ const Chatbot = () => {
     setInput("");
 
     try {
-      const response = await axios.post(`${baseUrl}/ask`, {
+      const response = await axios.post(`https://glean.onrender.com/ask`, {
         doc_id: activeCase,
         query: userQuery,
       });
