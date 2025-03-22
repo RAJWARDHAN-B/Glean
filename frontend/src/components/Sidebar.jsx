@@ -49,9 +49,9 @@ const Sidebar = ({ onSelectDoc }) => {
       {/* Cases List */}
       <div className="flex-1 overflow-y-auto space-y-3">
         {docs.length > 0 ? (
-          docs.map((doc) => (
+          docs.map((doc, index) => (
             <div
-              key={doc.id}
+              key={doc.id || index} // Ensure unique keys
               onClick={() => handleDocSelect(doc)}
               className={`p-3 flex items-center space-x-2 cursor-pointer transition-all rounded-full ${
                 activeDocId === doc.id

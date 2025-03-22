@@ -9,6 +9,8 @@ const Home = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [documentIds, setDocumentIds] = useState([]);
   const [selectedDoc, setSelectedDoc] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
 
   const AUTH_TOKEN =
     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbmFAZ21haWwuY29tIiwiZXhwIjoxNzQ1MjEzMjk5fQ.eO78FuvWjPnfqeC7U8GUJCTuSgCvgZSpmNMcacF4o1k";
@@ -19,10 +21,36 @@ const Home = () => {
     setDocumentIds(storedDocs);
   }, []);
 
+  // Fetch document summary
+  const fetchDocumentSummary = async () => {
+    try {
+      const response = await fetch("https://glean.onrender.com/user/docs/67de6136837744962f44091d", {
+        method: "GET",
+        headers: { Authorization: AUTH_TOKEN },
+      });
+  
+      console.log("API Response Status:", response.status);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching summary:", error.message);
+      toast.error("Failed to fetch summary. Check your token.");
+      return null;
+    }
+  };
+  
+  
+
   // Handle file selection from sidebar
   const handleSelectDoc = (doc) => {
     setSelectedDoc(doc);
     setPdfUrl(`https://glean.onrender.com/doc/${doc.id}/view`); // Assuming API serves the PDF
+    fetchDocumentSummary(doc.id);
   };
 
   const handleFileUpload = async (e) => {
@@ -64,6 +92,8 @@ const Home = () => {
       setDocumentIds(updatedDocs);
       setSelectedDoc(newDoc); // Auto-select new file
 
+      fetchDocumentSummary(newDoc.id); // Fetch summary after upload
+
       toast.success("PDF uploaded successfully!");
     } catch (error) {
       console.error("Upload failed:", error);
@@ -99,10 +129,15 @@ const Home = () => {
           <div className="w-1/2 h-full border border-slate-700 rounded-lg p-6 overflow-auto shadow-md bg-[rgba(255,255,255,0.04)] backdrop-blur-sm">
             <h2 className="text-xl font-semibold mb-4">Document Report</h2>
             {selectedDoc ? (
-              <p className="text-base leading-relaxed text-slate-300">
+              <div className="text-base leading-relaxed text-slate-300">
                 <strong>Title:</strong> {selectedDoc.name} <br />
-                <strong>Summary:</strong> Processing...
-              </p>
+                <strong>Summary:</strong>{" "}
+                {isLoadingSummary ? (
+                  <span className="text-gray-400">Loading...</span>
+                ) : (
+                  <span>{summary}</span>
+                )}
+              </div>
             ) : (
               <p className="italic text-slate-400">Select a PDF to view details.</p>
             )}
