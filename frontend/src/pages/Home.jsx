@@ -89,7 +89,7 @@ const Home = () => {
 
           {/* Summary Section */}
           <div className="w-1/2 h-full border border-slate-700 rounded-lg p-6 overflow-auto shadow-md bg-[rgba(255,255,255,0.04)] backdrop-blur-sm">
-            <h2 className="text-xl font-semibold mb-4">Document Summary</h2>
+            <h2 className="text-xl font-semibold mb-4">Document Report</h2>
             {pdfFile ? (
               <p className="text-base leading-relaxed text-slate-300">
                 <strong>Title:</strong> {pdfFile.name} <br />
