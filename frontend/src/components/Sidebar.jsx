@@ -1,21 +1,39 @@
-import React, { useContext, useState, useEffect } from "react";
-import { PdfContext } from "../context/PdfContext";
-import { FaBars, FaGripLines, FaFileAlt, FaPlus } from "react-icons/fa"; // Icons
+import React, { useState, useEffect } from "react";
+import { FaBars, FaGripLines, FaFileAlt } from "react-icons/fa"; // Icons
+import { getUserDocuments } from "../api"; // Import API call
+import { toast } from "react-toastify";
 
-const Sidebar = () => {
-  const { cases, activeCase, setActiveCase, addNewCase } = useContext(PdfContext);
-
-  // Retrieve sidebar state from localStorage
+const Sidebar = ({ onSelectDoc }) => {
+  const [docs, setDocs] = useState([]);
+  const [activeDoc, setActiveDoc] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return JSON.parse(localStorage.getItem("sidebarCollapsed")) || false;
   });
+
+  const token = localStorage.getItem("token"); // Get auth token
 
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+  useEffect(() => {
+    if (token) {
+      fetchUserDocuments();
+    }
+  }, []);
+
+  const fetchUserDocuments = async () => {
+    try {
+      const docIds = await getUserDocuments(token);
+      setDocs(docIds);
+    } catch (error) {
+      toast.error("Failed to fetch user documents");
+    }
+  };
+
+  const handleDocSelect = (docId) => {
+    setActiveDoc(docId);
+    onSelectDoc(docId);
   };
 
   return (
@@ -33,7 +51,7 @@ const Sidebar = () => {
         )}
         {/* Toggle Button */}
         <button
-          onClick={toggleSidebar}
+          onClick={() => setIsCollapsed(!isCollapsed)}
           className="text-[#64FFDA] p-2 rounded-full hover:bg-[#5be8e4] transition-colors"
         >
           {isCollapsed ? <FaGripLines size={20} /> : <FaBars size={20} />}
@@ -42,31 +60,26 @@ const Sidebar = () => {
 
       {/* Cases List */}
       <div className="flex-1 overflow-y-auto space-y-3">
-        {cases.map((caseItem) => (
-          <div
-            key={caseItem.id}
-            onClick={() => setActiveCase(caseItem.id)}
-            className={`p-3 flex items-center space-x-2 cursor-pointer transition-all rounded-full ${
-              activeCase === caseItem.id
-                ? "bg-[rgba(100,255,218,0.15)]"
-                : "bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(100,255,218,0.1)]"
-            }`}
-          >
-            <FaFileAlt size={18} className="text-[#64FFDA]" />
-            {!isCollapsed && <span>{caseItem.title}</span>}
-          </div>
-        ))}
-      </div>
-
-      {/* Add New Case */}
-      <div>
-        <button
-          onClick={addNewCase}
-          className="w-full flex items-center justify-center space-x-2 p-3 rounded-full bg-[#64FFDA] text-[#1F2430] font-semibold hover:bg-[#5be8e4] transition-colors"
-        >
-          <FaPlus size={16} />
-          {!isCollapsed && <span>New Case</span>}
-        </button>
+        {docs.length > 0 ? (
+          docs.map((docId) => (
+            <div
+              key={docId}
+              onClick={() => handleDocSelect(docId)}
+              className={`p-3 flex items-center space-x-2 cursor-pointer transition-all rounded-full ${
+                activeDoc === docId
+                  ? "bg-[rgba(100,255,218,0.15)]"
+                  : "bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(100,255,218,0.1)]"
+              }`}
+            >
+              <FaFileAlt size={18} className="text-[#64FFDA]" />
+              {!isCollapsed && <span>{docId}</span>}
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-sm text-gray-400 italic">
+            No documents uploaded
+          </p>
+        )}
       </div>
     </div>
   );
