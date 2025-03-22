@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { FaBars, FaGripLines, FaFileAlt } from "react-icons/fa"; // Icons
-import { getUserDocuments } from "../api"; // Import API call
-import { toast } from "react-toastify";
 
 const Sidebar = ({ onSelectDoc }) => {
   const [docs, setDocs] = useState([]);
@@ -10,30 +8,20 @@ const Sidebar = ({ onSelectDoc }) => {
     return JSON.parse(localStorage.getItem("sidebarCollapsed")) || false;
   });
 
-  const token = localStorage.getItem("token"); // Get auth token
+  // Load document history from local storage on mount
+  useEffect(() => {
+    const storedDocs = JSON.parse(localStorage.getItem("uploadedDocs")) || [];
+    setDocs(storedDocs);
+  }, []);
 
+  // Store sidebar collapse state
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
-  useEffect(() => {
-    if (token) {
-      fetchUserDocuments();
-    }
-  }, []);
-
-  const fetchUserDocuments = async () => {
-    try {
-      const docIds = await getUserDocuments(token);
-      setDocs(docIds);
-    } catch (error) {
-      toast.error("Failed to fetch user documents");
-    }
-  };
-
-  const handleDocSelect = (docId) => {
-    setActiveDoc(docId);
-    onSelectDoc(docId);
+  const handleDocSelect = (doc) => {
+    setActiveDoc(doc.id);
+    onSelectDoc(doc); // Send docId & name to Home.jsx
   };
 
   return (
@@ -61,18 +49,18 @@ const Sidebar = ({ onSelectDoc }) => {
       {/* Cases List */}
       <div className="flex-1 overflow-y-auto space-y-3">
         {docs.length > 0 ? (
-          docs.map((docId) => (
+          docs.map((doc) => (
             <div
-              key={docId}
-              onClick={() => handleDocSelect(docId)}
+              key={doc.id}
+              onClick={() => handleDocSelect(doc)}
               className={`p-3 flex items-center space-x-2 cursor-pointer transition-all rounded-full ${
-                activeDoc === docId
+                activeDoc === doc.id
                   ? "bg-[rgba(100,255,218,0.15)]"
                   : "bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(100,255,218,0.1)]"
               }`}
             >
               <FaFileAlt size={18} className="text-[#64FFDA]" />
-              {!isCollapsed && <span>{docId}</span>}
+              {!isCollapsed && <span>{doc.name}</span>}
             </div>
           ))
         ) : (

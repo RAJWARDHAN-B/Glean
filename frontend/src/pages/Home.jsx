@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Chatbot from "../components/Chatbot";
 import { toast } from "react-toastify";
@@ -8,9 +8,16 @@ const Home = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [documentIds, setDocumentIds] = useState([]);
 
   const AUTH_TOKEN =
     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbmFAZ21haWwuY29tIiwiZXhwIjoxNzQ1MjEzMjk5fQ.eO78FuvWjPnfqeC7U8GUJCTuSgCvgZSpmNMcacF4o1k";
+
+  // Load document IDs from local storage on mount
+  useEffect(() => {
+    const storedDocs = JSON.parse(localStorage.getItem("uploadedDocs")) || [];
+    setDocumentIds(storedDocs);
+  }, []);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
@@ -41,9 +48,15 @@ const Home = () => {
       }
 
       const data = await response.json();
-      toast.success("PDF uploaded successfully!");
+      const newDocId = data.document_id;
 
-      console.log("Uploaded document ID:", data.document_id);
+      // Store document ID in local storage
+      const updatedDocs = [...documentIds, newDocId];
+      localStorage.setItem("uploadedDocs", JSON.stringify(updatedDocs));
+      setDocumentIds(updatedDocs); // Update state to trigger re-render
+
+      toast.success("PDF uploaded successfully!");
+      console.log("Uploaded document ID:", newDocId);
     } catch (error) {
       console.error("Upload failed:", error);
       toast.error("Upload failed. Please try again.");
@@ -54,7 +67,8 @@ const Home = () => {
 
   return (
     <div className="flex h-screen bg-gradient-to-b from-[#1F2430] to-[#12171D] text-slate-100">
-      <Sidebar />
+      {/* Sidebar with document history */}
+      <Sidebar documentIds={documentIds} />
 
       <div className="flex-1 flex flex-col p-6 relative">
         <h1 className="text-3xl font-bold tracking-wide text-[#64FFDA] mb-6">
